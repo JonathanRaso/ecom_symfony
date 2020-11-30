@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,21 +35,13 @@ class RegisterType extends AbstractType
                     'placeholder' => 'Merci de saisir votre email' 
                 ]
             ])
-            ->add('password', PasswordType::class, [
+            ->add('password', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'invalid_message' => 'le mot de passe et la confirmation doivent être identiques',
                 'label' => 'Votre mot de passe',
-                'attr' => [
-                    'placeholder' => 'Merci de saisir votre mot de passe'
-                ]
-            ])
-            ->add('password_confirm', PasswordType::class, [
-                'label' => 'Confirmez votre mot de passe',
-                // With mapped, we tell Symfony to not link this form input to my entity (user entity here)
-                // If we don't specify this, we will get an error because passsword_confirm is not define in our user entity
-                // And we don't want to have it inside our entity
-                'mapped' => false,
-                'attr' => [
-                    'placeholder' => 'Merci de confirmer votre mot de passe'
-                ]
+                'required' => true,
+                'first_options' => [ 'label' => 'Mot de passe' ],
+                'second_options' => [ 'label' => 'Confirmez votre mot de passe' ]
             ])
             ->add('submit', SubmitType::class, [
                 'label' => "S'inscrire"
