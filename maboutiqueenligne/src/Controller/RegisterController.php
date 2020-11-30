@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class RegisterController extends AbstractController
 {
@@ -19,13 +20,12 @@ class RegisterController extends AbstractController
 
     public function __construct(EntityManagerInterface $entityManager) {
         $this->entityManager = $entityManager;
-
     }
 
     /**
      * @Route("/inscription", name="register")
      */
-    public function index(Request $request): Response
+    public function index(Request $request, UserPasswordEncoderInterface $encoder): Response
     {
         // Create a new instance of User class, then create a new form linked to this user
         $user = new User();
@@ -36,8 +36,15 @@ class RegisterController extends AbstractController
 
         // We check if the form is submitted AND if it is valid (using TextType, EmailType, PasswordType for that)
         if ($form->isSubmitted() && $form->isValid()) {
+
             // If yes, we get user infos from our form and add it to our user object 
             $user = $form->getData();
+
+            // We extract the password from user object, and encode it with $encoder->encodePassword()
+            $password = $encoder->encodePassword($user, $user->getPassword());
+
+            // After encoding our password, we need to add it inside user object before saving new user inside DB
+            $user->setPassword($password);
 
             // 1) We need doctrine to add this new user into our DB (done with $entityManager)
             // 2) Freeze the data
