@@ -34,6 +34,11 @@ class Category
         $this->products = new ArrayCollection();
     }
 
+    // Need to stringify our categories for EasyAdmin, so we create this function __toString()
+    public function __toString() {
+        return $this->getName();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
