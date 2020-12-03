@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Classe\Cart;
-use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,22 +22,8 @@ class CartController extends AbstractController
      */
     public function index(Cart $cart): Response
     {
-        // We create a variable ($cartComplete, an empty array) in order to
-        // Put informations about the products added to the cart
-        $cartComplete = [];
-
-        //  With this loop, we add the right product(with all its infos)
-        // And we add it inside our $cartComplete array
-        foreach ($cart->get() as $id => $quantity) {
-            $cartComplete[] = [
-                'product' => $this->entityManager->getRepository(Product::class)->findOneById($id), 
-                'quantity' => $quantity
-            ];
-        }
-
         return $this->render('cart/index.html.twig', [
-            // Now, we give $cartComplete to the view, with all the right data needed
-            'cart' => $cartComplete
+            'cart' => $cart->getFull()
         ]);
     }
 
@@ -60,5 +45,25 @@ class CartController extends AbstractController
         $cart->remove();
 
         return $this->redirectToRoute('products');
+    }
+
+    /**
+     * @Route("/cart/delete/{id}", name="delete_to_cart")
+     */
+    public function delete(Cart $cart, $id): Response
+    {
+        $cart->delete($id);
+
+        return $this->redirectToRoute('cart');
+    }
+
+    /**
+     * @Route("/cart/decrease/{id}", name="decrease_to_cart")
+     */
+    public function decrease(Cart $cart, $id): Response
+    {
+        $cart->decrease($id);
+
+        return $this->redirectToRoute('cart');
     }
 }
