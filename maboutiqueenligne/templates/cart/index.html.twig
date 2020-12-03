@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon panier - Ma Boutique En Ligne{% endblock %}
+
+{% block content %}
+    <h1>Mon Panier</h1>
+    Retrouvez l'ensemble des produits que vous avez ajouté à votre panier.
+    <hr>
+    <table class="table mt-3">
+        <thead>
+        <tr>
+            <th scope="col">Produit</th>
+            <th scope="col"></th>
+            <th scope="col">Quantité</th>
+            <th scope="col">Prix</th>
+            <th scope="col">Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- set a new variable, and we will add every price inside it while looping through our array -->
+        {% set total = null %}
+        {% for product in cart %}
+        <tr>
+            <th>
+                <img src="/uploads/{{product.product.illustration}}" alt="{{ product.product.name }}" height="75px"><br>
+            </th>
+            <th>
+                {{ product.product.name }}<br>
+                <small>{{ product.product.subtitle }}</small>
+            </th>
+            <td>x {{ product.quantity }}</td>
+            <td>{{ (product.product.price / 100)|number_format(2, ',', '.') }} €</td>
+            <td>{{ ((product.product.price * product.quantity) / 100)|number_format(2, ',', '.') }} €</td>
+        </tr>
+        {% set total = total + (product.product.price * product.quantity) %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-right mb-5">
+        <!-- cart|length will give total products inside our cart -->
+        <strong>Nombre de produits:</strong> {{ cart|length }}<br> 
+        <strong>Total de mon panier:</strong> {{ (total / 100)|number_format(2, ',', '.') }} €
+        <a href="" class="btn btn-success btn-block">Valider mon panier</a>
+    </div>
+    
+{% endblock %}
