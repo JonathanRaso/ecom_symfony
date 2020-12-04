@@ -8,8 +8,12 @@
     <hr>
     <div class="row">
         <div class="col-md-6">
-            <strong>Choisir mon adresse de livraison</strong><br>
-            <strong>Choisir mon transporteur</strong>
+            {% set formHtml %}
+                {{ form(form) }}
+            {% endset  %}
+
+            <!-- With this line, we replace [br] with <br> and we use raw to interpret this tag  -->
+            {{ formHtml|replace({'[br]' : '<br>'})|raw }}
         </div>
         <div class="col-md-6">
             <strong>Recap de ma commande</strong><br>
