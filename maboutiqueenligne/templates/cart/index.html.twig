@@ -55,7 +55,7 @@
             <!-- cart|length will give total products inside our cart -->
             <strong>Nombre de produits:</strong> {{ cart|length }}<br> 
             <strong>Total de mon panier:</strong> {{ (total / 100)|number_format(2, ',', '.') }} €
-            <a href="" class="btn btn-success btn-block mt-3">Valider mon panier</a>
+            <a href="{{ path('order') }}" class="btn btn-success btn-block mt-3">Valider mon panier</a>
         </div>
     {% else %}
         <strong>Vous n'avez aucun produit dans votre panier.<strong>
