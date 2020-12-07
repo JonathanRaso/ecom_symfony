@@ -102,7 +102,7 @@ class OrderController extends AbstractController
             return $this->render('order/add.html.twig', [
                 'cart' => $cart->getFull(),
                 'carrier' => $carriers,
-                'delivery' => $delivery
+                'delivery' => $delivery_content
             ]);
         }
 
