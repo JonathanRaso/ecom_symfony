@@ -97,7 +97,7 @@ class OrderController extends AbstractController
             }
 
             // We save order and orderDetails in the DB
-            // $this->entityManager->flush();
+            $this->entityManager->flush();
 
             return $this->render('order/add.html.twig', [
                 'cart' => $cart->getFull(),
