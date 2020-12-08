@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classe\Mail;
 use App\Entity\User;
 use App\Form\RegisterType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,6 +28,8 @@ class RegisterController extends AbstractController
      */
     public function index(Request $request, UserPasswordEncoderInterface $encoder): Response
     {
+        $notification = null;
+
         // Create a new instance of User class, then create a new form linked to this user
         $user = new User();
         $form = $this->createForm(RegisterType::class, $user);
@@ -40,21 +43,37 @@ class RegisterController extends AbstractController
             // If yes, we get user infos from our form and add it to our user object 
             $user = $form->getData();
 
-            // We extract the password from user object, and encode it with $encoder->encodePassword()
-            $password = $encoder->encodePassword($user, $user->getPassword());
+            // Here, we check if the user doesn't exist inside the DB
+            $search_email = $this->entityManager->getRepository(User::class)->findOneByEmail($user->getEmail());
 
-            // After encoding our password, we need to add it inside user object before saving new user inside DB
-            $user->setPassword($password);
+            if (!$search_email) {
+                // We extract the password from user object, and encode it with $encoder->encodePassword()
+                $password = $encoder->encodePassword($user, $user->getPassword());
+    
+                // After encoding our password, we need to add it inside user object before saving new user inside DB
+                $user->setPassword($password);
+    
+                // 1) We need doctrine to add this new user into our DB (done with $entityManager)
+                // 2) Freeze the data
+                $this->entityManager->persist($user);
+                // 3) Get the freeze data and save it into database
+                $this->entityManager->flush();
+                $notification = "Votre inscription s'est correctement déroulée. Vous pouvez vous connecter à votre compte.";
 
-            // 1) We need doctrine to add this new user into our DB (done with $entityManager)
-            // 2) Freeze the data
-            $this->entityManager->persist($user);
-            // 3) Get the freeze data and save it into database
-            $this->entityManager->flush();
+                $mail = new Mail();
+                $content = "Bonjour ".$user->getFirstname().". Voici un mail de test pour valider la réussite de votre inscription"; 
+                $mail->send($user->getEmail(), $user->getFirstname(), 'Bienvenue sur Ma Boutique En Ligne', $content);
+
+            } else {
+                $notification = "L'email que vous avez renseigné existe déjà.";
+            }
+
+
         }
 
         return $this->render('register/index.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'notification' => $notification
         ]);
     }
 }
