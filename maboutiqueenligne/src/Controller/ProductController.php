@@ -55,13 +55,16 @@ class ProductController extends AbstractController
         // Here, we get our product repository with entityManager method 'getRepository(name_of_the_repository)'
         // And we get the right product with the slug and the method findOneBySlug($slug);
         $product = $this->entityManager->getRepository(Product::class)->findOneBySlug($slug);
+        // Get every articles with isBest = 1
+        $products = $this->entityManager->getRepository(Product::class)->findByIsBest(1);
 
         if (!$product) {
             return $this->redirectToRoute('products');
         }
 
         return $this->render('product/show.html.twig', [
-            'product' => $product
+            'product' => $product,
+            'products' => $products
         ]);
     }
 }
