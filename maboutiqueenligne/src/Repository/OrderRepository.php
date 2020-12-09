@@ -26,7 +26,7 @@ class OrderRepository extends ServiceEntityRepository
     public function findSuccessOrders($user)
     {
         return $this->createQueryBuilder('o')
-            ->andWhere('o.isPaid = 1')
+            ->andWhere('o.state > 0')
             // Here, we only want to display user's orders, so we want to find orders from the connected user
             // thanks to setParameter. It will define which user we want to find here. 
             ->andWhere('o.user = :user')

@@ -29,12 +29,12 @@ class OrderSuccessController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        // If isPaid status of the order is 0 (not paid), we need to change it for 1 (paid)
-        if (!$order->getIsPaid()) {
+        // If state status of the order is 0 (not paid), we need to change it for 1 (paid)
+        if ($order->getState() == 0) {
             // Remove cart's session
             $cart->remove();
             // Modify isPaid status from 0 to 1
-            $order->setIsPaid(1);
+            $order->setState(1);
             $this->entityManager->flush();
             // Send email to customer
             $mail = new Mail();
